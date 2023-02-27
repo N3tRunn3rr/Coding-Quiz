@@ -5,7 +5,11 @@ var answerBtnEl = document.getElementById('answer-buttons');
 var timerEl = document.getElementById('timer');
 var timerSpanEl = document.getElementById('timer-span');
 var timerId;
-var timeLeft = 120;
+var timeLeft = 60;
+var userInitials = document.querySelector("#initials").value;
+var userScore = 0;
+
+var highScores = JSON.parse(localStorage.getItem('highscores')) || [];
 
 
 
@@ -17,6 +21,7 @@ startBtn.addEventListener('click', startGame)
 
 function startGame() {
     console.log('Started')
+    console.log("Current Score is: " + userScore)
     startBtn.classList.add('hide')
     shuffledQuestions = quizContent.sort(() => Math.random() - .5)
     currentQuestionIndex = 0
@@ -42,30 +47,74 @@ function showQuestion(list) {
         btn1.textContent = list.answers[i]
         answerBtnEl.appendChild(btn1)
         }
+
     }
-function gameOver(){
-    console.log('game over')
-    clearInterval(timerId);
-    questionContainer.setAttribute('class', 'hide');
-    let endDiv = document.getElementById('end-div');
-    endDiv.removeAttribute('class');
-}
+    function gameOver(){
+        console.log('game over')
+        clearInterval(timerId);
+        questionContainer.setAttribute('class', 'hide');
+        let endDiv = document.getElementById('end-div');
+        endDiv.removeAttribute('class');
+    }
+    
+    let initialsSubmitBtn = document.getElementById('initials-submit');
+    initialsSubmitBtn.onclick = saveScore;
+    
+    function saveScore() {
+        // if we need data (and its already IN localStorage)
+        // First Grab it (JSON) --> What issue might we run into(?)
+        let savedData = localStorage.get("highscores");   // --> "undefined" / null
+        // IF it EXISITS  --> IF IT DOESNT we have to create it
+        //if()
+        localStorage.setItem('highscores', JSON.stringify([]));
+        console.log(highScores);
+        // Convert it to a more easy to work with (Parse to JS object/Array)  --> (JS)
 
-let initialsSubmitBtn = document.getElementById('initials-submit');
-initialsSubmitBtn.onclick = saveScore;
+        // Add our new data (ARRAY.push(newData))
+        highScores.push(newData);
+        // Convert it back to a STRING DATA (BROWSERS ONLY UNDERSTAND STRING DATA)
 
-function saveScore() {
-    console.log('your score is: ')
-}
+        // UPDATE / re-SAVE the new dataset 
 
-function selectAnswer(event) {
+
+        localStorage.setItem("highscores", "NewDataSet")  // overwrites the data with the existing KEY: Value
+    }
+    // todo: need to get score to update on the first correct answer and not the second 
+    // todo: need to get score to save to local storage and then combine that with initials    
+    function selectAnswer(event) {
+        let correctAnswer = shuffledQuestions[currentQuestionIndex].correct
+        let chosenAnswer = event.target.textContent
+
+        let results = checkAnswer(event)  // here we pass the two variables on to a different function
+        console.log("Results: ", results);
+
+        currentQuestionIndex++;
+        if (currentQuestionIndex == quizContent.length || timeLeft <= 0) {
+            gameOver()
+        } else {
+            nextQuestion()
+        }
+    }
+    
+    // add a validation or comparison (function / conditional statement)
+function checkAnswer(event) {
     let correctAnswer = shuffledQuestions[currentQuestionIndex].correct
     let chosenAnswer = event.target.textContent
-    currentQuestionIndex++;
-    if (currentQuestionIndex == quizContent.length || timeLeft <= 0) {
-        gameOver()
+
+    console.log("Correct Answer is: , ", correctAnswer);
+    console.log("User Choice: ", chosenAnswer);
+
+    if (chosenAnswer === correctAnswer) {
+        score = userScore++;
+        console.log("current score is: " + score);
+        // update the users Score
+       // console.log("Correct!")
+       //score = score + 10;
+        return("Correct!");
     } else {
-        nextQuestion()
+        // update the users timer (minus time)
+        console.log("User Score: " + userScore)
+        return "Incorrect. The correct answer is " + correctAnswer + ".";
     }
 }
 

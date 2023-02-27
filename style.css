@@ -6,7 +6,9 @@
 :root {
     --hue-neutral: 200;
     --hue-wrong: 0;
+    /* red */
     --hue-correct: 120;
+    /* green */
     /* reference hsl for colors  */
 }
 
@@ -91,4 +93,9 @@ body.wrong {
 
 .hide {
     display: none;
+}
+
+.timer {
+    margin-right: 20px;
+    color: white;
 }
